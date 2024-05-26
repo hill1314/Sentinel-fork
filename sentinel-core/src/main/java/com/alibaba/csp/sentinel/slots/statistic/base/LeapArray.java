@@ -40,11 +40,26 @@ import com.alibaba.csp.sentinel.util.TimeUtil;
  */
 public abstract class LeapArray<T> {
 
+    /**
+     * 窗口长度（ms）
+     */
     protected int windowLengthInMs;
+    /**
+     * 样本计数
+     */
     protected int sampleCount;
+    /**
+     * 间隔（ms）
+     */
     protected int intervalInMs;
+    /**
+     * 间隔（秒）
+     */
     private double intervalInSecond;
 
+    /**
+     *
+     */
     protected final AtomicReferenceArray<WindowWrap<T>> array;
 
     /**
@@ -97,12 +112,25 @@ public abstract class LeapArray<T> {
      */
     protected abstract WindowWrap<T> resetWindowTo(WindowWrap<T> windowWrap, long startTime);
 
+    /**
+     * 计算时间索引
+     *
+     * @param timeMillis 时间毫秒
+     * @return int
+     */
     private int calculateTimeIdx(/*@Valid*/ long timeMillis) {
+        //当前时间的下标 = 当前时间 / 窗口长度
         long timeId = timeMillis / windowLengthInMs;
         // Calculate current index so we can map the timestamp to the leap array.
         return (int)(timeId % array.length());
     }
 
+    /**
+     * 计算窗口开始
+     *
+     * @param timeMillis 时间毫秒
+     * @return long
+     */
     protected long calculateWindowStart(/*@Valid*/ long timeMillis) {
         return timeMillis - timeMillis % windowLengthInMs;
     }
@@ -118,10 +146,16 @@ public abstract class LeapArray<T> {
             return null;
         }
 
+        //计算下标
         int idx = calculateTimeIdx(timeMillis);
-        // Calculate current bucket start time.
+        //窗口开始时间  Calculate current bucket start time.
         long windowStart = calculateWindowStart(timeMillis);
-
+        /**
+         *  三种场景：
+         * （1） Bucket不存在，需创建一个新的Bucket，然后CAS更新为循环数组
+         * （2） Bucket是最新的，然后只需退回Bucket。
+         * （3） Bucket已弃用，请重置当前Bucket
+         */
         /*
          * Get bucket item at given time from the array.
          *

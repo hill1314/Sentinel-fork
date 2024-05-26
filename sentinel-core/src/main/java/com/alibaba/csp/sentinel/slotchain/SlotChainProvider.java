@@ -40,12 +40,13 @@ public final class SlotChainProvider {
             return slotChainBuilder.build();
         }
 
-        // Resolve the slot chain builder SPI.
+        // SPI方式获取 -- Resolve the slot chain builder SPI.
         slotChainBuilder = SpiLoader.of(SlotChainBuilder.class).loadFirstInstanceOrDefault();
 
         if (slotChainBuilder == null) {
             // Should not go through here.
             RecordLog.warn("[SlotChainProvider] Wrong state when resolving slot chain builder, using default");
+            //默认处理器链构建器
             slotChainBuilder = new DefaultSlotChainBuilder();
         } else {
             RecordLog.info("[SlotChainProvider] Global slot chain builder resolved: {}",

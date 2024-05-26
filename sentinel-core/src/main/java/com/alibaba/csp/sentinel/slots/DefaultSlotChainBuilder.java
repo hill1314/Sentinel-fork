@@ -39,6 +39,7 @@ public class DefaultSlotChainBuilder implements SlotChainBuilder {
     public ProcessorSlotChain build() {
         ProcessorSlotChain chain = new DefaultProcessorSlotChain();
 
+        //SPI 方式获取 ProcessorSlot 实现
         List<ProcessorSlot> sortedSlotList = SpiLoader.of(ProcessorSlot.class).loadInstanceListSorted();
         for (ProcessorSlot slot : sortedSlotList) {
             if (!(slot instanceof AbstractLinkedProcessorSlot)) {
@@ -46,6 +47,7 @@ public class DefaultSlotChainBuilder implements SlotChainBuilder {
                 continue;
             }
 
+            //最后添加一个
             chain.addLast((AbstractLinkedProcessorSlot<?>) slot);
         }
 

@@ -61,6 +61,7 @@ public class AsyncEntryTest {
         final String contextName = "abc";
         final String origin = "xxx";
         try {
+            // Init async context.
             ContextUtil.enter(contextName, origin);
             Context curContext = ContextUtil.getContext();
             AsyncEntry entry = new AsyncEntry(new StringResourceWrapper("testInitAndGetAsyncContext", EntryType.OUT),

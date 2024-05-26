@@ -29,6 +29,7 @@ import com.alibaba.csp.sentinel.slots.block.degrade.circuitbreaker.CircuitBreake
 import com.alibaba.csp.sentinel.spi.Spi;
 
 /**
+ * 熔断 slot
  * A {@link ProcessorSlot} dedicates to circuit breaking.
  *
  * @author Carpenter Lee
@@ -50,6 +51,7 @@ public class DegradeSlot extends AbstractLinkedProcessorSlot<DefaultNode> {
         if (circuitBreakers == null || circuitBreakers.isEmpty()) {
             return;
         }
+        //熔断规则判断
         for (CircuitBreaker cb : circuitBreakers) {
             if (!cb.tryPass(context)) {
                 throw new DegradeException(cb.getRule().getLimitApp(), cb.getRule());

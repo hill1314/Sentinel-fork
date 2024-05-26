@@ -158,12 +158,16 @@ public class NodeSelectorSlot extends AbstractLinkedProcessorSlot<Object> {
             synchronized (this) {
                 node = map.get(context.getName());
                 if (node == null) {
+                    //创建一个DefaultNode
                     node = new DefaultNode(resourceWrapper, null);
+
+                    //并添加到 map中，使用的是 copyOnWrite 方式
                     HashMap<String, DefaultNode> cacheMap = new HashMap<String, DefaultNode>(map.size());
                     cacheMap.putAll(map);
                     cacheMap.put(context.getName(), node);
                     map = cacheMap;
-                    // Build invocation tree
+
+                    // Build invocation tree  添加子节点
                     ((DefaultNode) context.getLastNode()).addChild(node);
                 }
 
@@ -171,6 +175,8 @@ public class NodeSelectorSlot extends AbstractLinkedProcessorSlot<Object> {
         }
 
         context.setCurNode(node);
+
+        //调下一个 slot
         fireEntry(context, resourceWrapper, node, count, prioritized, args);
     }
 

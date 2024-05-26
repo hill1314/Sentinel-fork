@@ -58,8 +58,11 @@ public class ClusterNode extends StatisticNode {
     }
 
     /**
+     * key:来源，value：StatisticNode
      * <p>The origin map holds the pair: (origin, originNode) for one specific resource.</p>
      * <p>
+     *  应用程序运行的时间越长，映射就越稳定。所以我们在这里没有使用并发映射，而是使用了一个锁，因为这个锁只会发生在一开始，而并发映射将一直保持锁
+     *
      * The longer the application runs, the more stable this mapping will become.
      * So we didn't use concurrent map here, but a lock, as this lock only happens
      * at the very beginning while concurrent map will hold the lock all the time.

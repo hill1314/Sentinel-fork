@@ -72,6 +72,7 @@ public abstract class AbstractCircuitBreaker implements CircuitBreaker {
         }
         if (currentState.get() == State.OPEN) {
             // For half-open state we allow a request for probing.
+            //对于半开放状态，过了设置的时间间隔后，我们允许进行探测请求。
             return retryTimeoutArrived() && fromOpenToHalfOpen(context);
         }
         return false;
@@ -101,6 +102,12 @@ public abstract class AbstractCircuitBreaker implements CircuitBreaker {
         return false;
     }
 
+    /**
+     * 从打开到半打开
+     *
+     * @param context 上下文
+     * @return boolean
+     */
     protected boolean fromOpenToHalfOpen(Context context) {
         if (currentState.compareAndSet(State.OPEN, State.HALF_OPEN)) {
             notifyObservers(State.OPEN, State.HALF_OPEN, null);
@@ -112,6 +119,7 @@ public abstract class AbstractCircuitBreaker implements CircuitBreaker {
                     // Without the hook, the circuit breaker won't recover from half-open state in some circumstances
                     // when the request is actually blocked by upcoming rules (not only degrade rules).
                     if (entry.getBlockError() != null) {
+                        //这里表示此次调用还是异常，所以将状态改为 OPEN
                         // Fallback to OPEN due to detecting request is blocked
                         currentState.compareAndSet(State.HALF_OPEN, State.OPEN);
                         notifyObservers(State.HALF_OPEN, State.OPEN, 1.0d);

@@ -62,9 +62,14 @@ public interface CircuitBreaker {
     enum State {
         /**
          * In {@code OPEN} state, all requests will be rejected until the next recovery time point.
+         * 在OPEN状态下，所有请求都将被拒绝，直到下一个恢复时间点。
          */
         OPEN,
         /**
+         * 在｛@code HALF_OPEN｝状态下，断路器将允许“探测”调用。
+         * 如果根据策略调用异常（例如，调用缓慢），则断路器将重新转换到{@code OPEN}状态，并等待下一个恢复时间点；
+         * 否则，资源将被视为“已回收”，断路器 将停止切断请求并转换到{@code CLOSED}状态
+         *
          * In {@code HALF_OPEN} state, the circuit breaker will allow a "probe" invocation.
          * If the invocation is abnormal according to the strategy (e.g. it's slow), the circuit breaker
          * will re-transform to the {@code OPEN} state and wait for the next recovery time point;

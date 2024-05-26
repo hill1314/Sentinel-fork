@@ -90,6 +90,7 @@ import com.alibaba.csp.sentinel.util.function.Predicate;
 public class StatisticNode implements Node {
 
     /**
+     * 秒级监控指标（2个窗口，总长度 1000ms）
      * Holds statistics of the recent {@code INTERVAL} milliseconds. The {@code INTERVAL} is divided into time spans
      * by given {@code sampleCount}.
      */
@@ -97,6 +98,7 @@ public class StatisticNode implements Node {
         IntervalProperty.INTERVAL);
 
     /**
+     * 分钟级监控指标 （60个窗口，总长度 60s）
      * Holds statistics of the recent 60 seconds. The windowLengthInMs is deliberately set to 1000 milliseconds,
      * meaning each bucket per second, in this way we can get accurate statistics of each second.
      */
@@ -104,6 +106,7 @@ public class StatisticNode implements Node {
 
     /**
      * The counter for thread count.
+     * >>> LongAdder 与 AtomicLong 类似，但性能更好
      */
     private LongAdder curThreadNum = new LongAdder();
 
@@ -284,6 +287,14 @@ public class StatisticNode implements Node {
         rollingCounterInSecond.debug();
     }
 
+    /**
+     * 尝试占用下一个
+     *
+     * @param currentTime  当前时间
+     * @param acquireCount 获取计数
+     * @param threshold    门槛
+     * @return long
+     */
     @Override
     public long tryOccupyNext(long currentTime, int acquireCount, double threshold) {
         double maxCount = threshold * IntervalProperty.INTERVAL / 1000;

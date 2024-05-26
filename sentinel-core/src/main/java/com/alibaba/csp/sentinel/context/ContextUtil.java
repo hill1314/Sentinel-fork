@@ -104,7 +104,8 @@ public class ContextUtil {
      * </p>
      *
      * @param name   the context name
-     * @param origin the origin of this invocation, usually the origin could be the Service
+     * @param origin 此调用的来源，通常来源可以是服务使用者的应用程序名称。当我们想要分别控制不同的调用程序使用者时，origin非常有用
+     *              the origin of this invocation, usually the origin could be the Service
      *               Consumer's app name. The origin is useful when we want to control different
      *               invoker/consumer separately.
      * @return The invocation context of the current thread

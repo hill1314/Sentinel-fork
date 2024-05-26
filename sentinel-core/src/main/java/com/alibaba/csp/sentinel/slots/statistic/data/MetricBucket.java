@@ -27,8 +27,14 @@ import java.util.concurrent.atomic.LongAdder;
  */
 public class MetricBucket {
 
+    /**
+     * 计数器（多个指标 MetricEvent）
+     */
     private final LongAdder[] counters;
 
+    /**
+     * 最小rt
+     */
     private volatile long minRt;
 
     public MetricBucket() {
@@ -70,6 +76,13 @@ public class MetricBucket {
         return counters[event.ordinal()].sum();
     }
 
+    /**
+     * 添加事件
+     *
+     * @param event 事件
+     * @param n     n
+     * @return {@link MetricBucket}
+     */
     public MetricBucket add(MetricEvent event, long n) {
         counters[event.ordinal()].add(n);
         return this;

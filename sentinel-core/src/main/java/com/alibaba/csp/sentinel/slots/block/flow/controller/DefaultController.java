@@ -45,6 +45,14 @@ public class DefaultController implements TrafficShapingController {
         return canPass(node, acquireCount, false);
     }
 
+    /**
+     * 是否可以通过
+     *
+     * @param node         节点
+     * @param acquireCount 获取计数
+     * @param prioritized  按优先级排列
+     * @return boolean
+     */
     @Override
     public boolean canPass(Node node, int acquireCount, boolean prioritized) {
         int curCount = avgUsedTokens(node);
@@ -53,6 +61,8 @@ public class DefaultController implements TrafficShapingController {
                 long currentTime;
                 long waitInMs;
                 currentTime = TimeUtil.currentTimeMillis();
+
+                //尝试占用下一个
                 waitInMs = node.tryOccupyNext(currentTime, acquireCount, count);
                 if (waitInMs < OccupyTimeoutProperty.getOccupyTimeout()) {
                     node.addWaitingRequest(currentTime + waitInMs, acquireCount);
@@ -60,6 +70,7 @@ public class DefaultController implements TrafficShapingController {
                     sleep(waitInMs);
 
                     // PriorityWaitException indicates that the request will pass after waiting for {@link @waitInMs}.
+                    //表示请求将在等待 waitInMs 之后通过
                     throw new PriorityWaitException(waitInMs);
                 }
             }

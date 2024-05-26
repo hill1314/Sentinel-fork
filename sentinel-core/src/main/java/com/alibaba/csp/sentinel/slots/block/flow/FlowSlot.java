@@ -29,6 +29,7 @@ import java.util.Collection;
 
 /**
  * <p>
+ *     限流 slot.
  * Combined the runtime statistics collected from the previous
  * slots (NodeSelectorSlot, ClusterNodeBuilderSlot, and StatisticSlot), FlowSlot
  * will use pre-set rules to decide whether the incoming requests should be
@@ -159,6 +160,7 @@ public class FlowSlot extends AbstractLinkedProcessorSlot<DefaultNode> {
     @Override
     public void entry(Context context, ResourceWrapper resourceWrapper, DefaultNode node, int count,
                       boolean prioritized, Object... args) throws Throwable {
+        //检查限流
         checkFlow(resourceWrapper, context, node, count, prioritized);
 
         fireEntry(context, resourceWrapper, node, count, prioritized, args);
