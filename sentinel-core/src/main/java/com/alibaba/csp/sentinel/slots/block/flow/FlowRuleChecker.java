@@ -173,16 +173,29 @@ public class FlowRuleChecker {
         return null;
     }
 
+    /**
+     * 集群限流检查
+     *
+     * @param rule         规则
+     * @param context      上下文
+     * @param node         节点
+     * @param acquireCount 获取计数
+     * @param prioritized  按优先级排列
+     * @return boolean
+     */
     private static boolean passClusterCheck(FlowRule rule, Context context, DefaultNode node, int acquireCount,
                                             boolean prioritized) {
         try {
+            //选择远程服务
             TokenService clusterService = pickClusterService();
             if (clusterService == null) {
                 return fallbackToLocalOrPass(rule, context, node, acquireCount, prioritized);
             }
             long flowId = rule.getClusterConfig().getFlowId();
+            //远程请求 获取令牌
             TokenResult result = clusterService.requestToken(flowId, acquireCount, prioritized);
             return applyTokenResult(result, rule, context, node, acquireCount, prioritized);
+
             // If client is absent, then fallback to local mode.
         } catch (Throwable ex) {
             RecordLog.warn("[FlowRuleChecker] Request cluster token unexpected failed", ex);
